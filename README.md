@@ -60,3 +60,19 @@ Supabase and Vercel both offer free tiers subject to quotas and changing terms. 
 - **Photo upload fails**: ensure SQL ran successfully, the bucket is named exactly `property-images`, the image is JPG/PNG/WebP and is no larger than 5 MB.
 - **New listing does not show**: confirm it was published with status `active`; check Supabase Table Editor → listings and the browser console for policy errors.
 - **Auth redirects to an error page**: add the exact deployed Vercel domain to Supabase Authentication → URL Configuration.
+
+
+## Troubleshooting: `Invalid supabaseUrl`
+
+If Vercel reports `Invalid supabaseUrl: Must be a valid HTTP or HTTPS URL`, the `NEXT_PUBLIC_SUPABASE_URL` value is missing, pasted incorrectly, or still contains the example placeholder.
+
+1. Open your Supabase project.
+2. Select **Project Settings → API** (in some dashboard versions, open **Project Settings → API Keys** for the key).
+3. Copy the **Project URL**. It must look like `https://abcdefghijk.supabase.co` — do not include quotes, spaces, or `/rest/v1`.
+4. In Vercel, open your project → **Settings → Environment Variables**.
+5. Set `NEXT_PUBLIC_SUPABASE_URL` to that exact Project URL.
+6. Set `NEXT_PUBLIC_SUPABASE_ANON_KEY` to the Supabase **publishable key** (`sb_publishable_...`) or legacy **anon public** key. Never use the `service_role` or secret key in a `NEXT_PUBLIC_` variable.
+7. Apply the variables to **Production**, **Preview**, and **Development**, then save.
+8. Open **Deployments**, select the latest deployment, choose **Redeploy**. If offered a build-cache option, redeploy without using the build cache.
+
+The app now validates the URL before creating the Supabase client. If the values are absent or still placeholders, the homepage can build in demo mode rather than failing prerendering. Authentication, database listings and uploads remain unavailable until valid Supabase values are configured.
